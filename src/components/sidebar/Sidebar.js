@@ -5,7 +5,7 @@ import './Sidebar.css'
 const Sidebar = () => {
     
     const recentItem = (topic) => (
-        <div className='sidebar__recentItem'>
+        <div className='sidebar__recentItems'>
             <span className='sidebar__hash'>#</span>
             <p>{topic}</p>
         </div>
