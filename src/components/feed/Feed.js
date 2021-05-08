@@ -5,14 +5,19 @@ import './Feed.css'
 import InputOption from './InputOption'
 import Post from './Post'
 import firebase from 'firebase'
+import { useSelector } from 'react-redux'
+import { selectUser } from '../../features/userSlice'
 
 const Feed = () => {
     const [input, setInput] = useState('')
     const [posts, setPosts] = useState([])
+    const user = useSelector(selectUser)
 
     useEffect(() => {
-        db.collection('posts').onSnapshot(
-            (snapshot) => setPosts(snapshot.docs.map(doc => ({
+        db.collection('posts')
+        .orderBy('timestamp', 'desc')
+        .onSnapshot((snapshot) => 
+            setPosts(snapshot.docs.map(doc => ({
                 id: doc.id,
                 data: doc.data(),
             }))))
@@ -22,10 +27,10 @@ const Feed = () => {
         e.preventDefault()
         
         db.collection('posts').add({
-            name: 'JoJo Armani',
-            description: 'this is a test',
-            message: {input},
-            photoUrl: '',
+            name: user.displayName,
+            description: user.email,
+            message: input,
+            photoUrl: user.photoUrl || '',
             timestamp: firebase.firestore.FieldValue.serverTimestamp()
         })
 
@@ -49,8 +54,8 @@ const Feed = () => {
                     <InputOption Icon={CalendarViewDay} title='Write article' color='#7FC15E'  />
                 </div>
             </div>
-
-            {posts.map(({id, data:{name, description, message, photoUrl}}) => {
+            
+            {posts.map(({id, data:{name, description, message, photoUrl}}) => (
                 <Post
                     key={id}
                     name={name}
@@ -58,7 +63,7 @@ const Feed = () => {
                     message={message}
                     photoUrl={photoUrl}
                 />
-            })}
+            ))}
         </div>
     )
 }
